@@ -26,7 +26,10 @@ public class PlatformConvController : MonoBehaviour
         {
             platform.Translate(Vector3.forward * Time.deltaTime * (-speed));
             if (platform.position.z < -12)
-                platform.position = new Vector3(Random.Range(-5f,5f), Random.Range(-1f, 1f), 36);
+            {
+                platform.position = new Vector3(Random.Range(-5f, 5f), 0, 36);
+                GameController.Instance.OnPlatformRespawn(platform);
+            }
         }
     }
 }

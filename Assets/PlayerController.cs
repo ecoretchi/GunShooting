@@ -8,15 +8,23 @@ public class PlayerController : MonoBehaviour
     public float speed = 4;
     public int maxLife = 3;
     public int maxHelthPoints = 5;
+    public int maxEnergyPoints = 5;
 
     public Text lifeFild;
     public Slider helthSlider;
+    public Slider energySlider;
+
     int currentLife;
     float jumpPower = 3;
 
     Rigidbody rigitBody;
 
     Vector3 orignPos;
+
+    private void Awake()
+    {
+        energySlider.maxValue = maxEnergyPoints;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +34,13 @@ public class PlayerController : MonoBehaviour
         rigitBody = GetComponent<Rigidbody>();
 
         orignPos = transform.position;
+    }
+
+    int CurrentEnergy => (int)energySlider.value;
+
+    void SetEnergy(int newEnergy)
+    {
+        energySlider.value = newEnergy;
     }
 
     void SetLife(int newLife)
@@ -58,7 +73,12 @@ public class PlayerController : MonoBehaviour
         {
             if (Mathf.Abs(rigitBody.velocity.y) < float.Epsilon)
             {
-                rigitBody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+                AddJumpForce();
+            }
+            else if(CurrentEnergy > 0)
+            {
+                AddJumpForce();
+                SetEnergy(CurrentEnergy - 1);
             }
         }
         if(rigitBody.velocity.y < 0 && transform.position.y < -1)
@@ -68,8 +88,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void AddJumpForce()
+    {
+        rigitBody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
+        if(other.gameObject.GetComponent<EnergyBall>())
+        {
+            SetEnergy(CurrentEnergy + 1);
+            Destroy(other.gameObject);
+            return;
+        }
+
+        // processing bullet collision 
         var v = helthSlider.value;
         if (v > 0)
             helthSlider.value = v - 1;
@@ -86,7 +119,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            throw new System.Exception("Game Over");
+            GameController.Instance.OnGameOver(true);
         }
     }
 
