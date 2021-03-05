@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿//using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(EnergyBallGenerator))]
 public class GameController : MonoBehaviour
 {
     static GameController _thisGameController = null;
@@ -18,31 +18,37 @@ public class GameController : MonoBehaviour
             return _thisGameController;
         }
     }
+    public PlayerController playerController;
+    public EnergyBall energyBallOrgn;
 
     public Text gameOverTxt;
-    public EnergyBallGenerator ballGenerator;
-
+    public Button restartBtn;
     public bool IsGameOver { get; private set; }
 
-    private void Awake()
-    {
-        ballGenerator = GetComponent<EnergyBallGenerator>();
-    }
+
     private void Start()
     {
-        OnGameOver(false);
+        energyBallOrgn.gameObject.SetActive(false);
+        StartGame();
     }
 
+    public void StartGame()
+    {
+        playerController.Init();
+        OnGameOver(false);
+    }
     public void OnGameOver(bool value)
     {
+        restartBtn.gameObject.SetActive(value);
         gameOverTxt.gameObject.SetActive(value);
         IsGameOver = value;
         gameObject.SetActive(!value);
     }
 
-
-    public void OnPlatformRespawn(Transform plain)
+    public void OnPlatformSpawn(Transform platform)
     {
-        ballGenerator.GenerateBall(plain);
+        var newBall = Instantiate(energyBallOrgn, platform);
+        newBall.gameObject.SetActive(true);
+        newBall.transform.localPosition = new Vector3(Random.Range(-3, +3), Random.Range(-1, +2), Random.Range(-3, +3) );
     }
 }

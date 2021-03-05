@@ -11,36 +11,29 @@ public class PlayerController : MonoBehaviour
     public int maxEnergyPoints = 5;
 
     public Text lifeFild;
+    public Text energyFild;
     public Slider helthSlider;
-    public Slider energySlider;
 
     int currentLife;
+    int currentEnergy;
+
     float jumpPower = 3;
 
     Rigidbody rigitBody;
 
     Vector3 orignPos;
-
-    private void Awake()
+    public void Init()
     {
-        energySlider.maxValue = maxEnergyPoints;
+        SetLife(maxLife);
+        SetEnergy(maxEnergyPoints);
+        Spawn();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         helthSlider.maxValue = maxHelthPoints;
-        SetLife(maxLife);
         rigitBody = GetComponent<Rigidbody>();
-
         orignPos = transform.position;
-    }
-
-    int CurrentEnergy => (int)energySlider.value;
-
-    void SetEnergy(int newEnergy)
-    {
-        energySlider.value = newEnergy;
     }
 
     void SetLife(int newLife)
@@ -49,6 +42,13 @@ public class PlayerController : MonoBehaviour
         lifeFild.text = string.Format("{0}", currentLife);
     }
 
+    void SetEnergy(int newEnergy)
+    {
+        if (newEnergy > maxEnergyPoints || newEnergy < 0 )
+            return;
+        currentEnergy = newEnergy;
+        energyFild.text = string.Format("{0}", currentEnergy);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -72,20 +72,22 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (Mathf.Abs(rigitBody.velocity.y) < float.Epsilon)
-            {
                 AddJumpForce();
-            }
-            else if(CurrentEnergy > 0)
+            else if(currentEnergy > 0)
             {
+                SetEnergy(currentEnergy - 1);
                 AddJumpForce();
-                SetEnergy(CurrentEnergy - 1);
             }
         }
         if(rigitBody.velocity.y < 0 && transform.position.y < -1)
         {
             LooseLife();
-            transform.position = orignPos + Vector3.up * 2;
         }
+    }
+
+    void Spawn()
+    {
+        transform.position = orignPos + Vector3.up * 2;
     }
 
     void AddJumpForce()
@@ -95,14 +97,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.GetComponent<EnergyBall>())
+
+        if(other.GetComponent<EnergyBall>())
         {
-            SetEnergy(CurrentEnergy + 1);
+            SetEnergy(currentEnergy + 1);
             Destroy(other.gameObject);
             return;
         }
 
-        // processing bullet collision 
         var v = helthSlider.value;
         if (v > 0)
             helthSlider.value = v - 1;
@@ -116,6 +118,7 @@ public class PlayerController : MonoBehaviour
         {
             SetLife(currentLife - 1);
             helthSlider.value = maxHelthPoints;
+            Spawn();
         }
         else
         {
