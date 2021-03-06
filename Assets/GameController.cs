@@ -48,6 +48,12 @@ public class GameController : MonoBehaviour
     public void OnPlatformSpawn(Transform platform)
     {
         var newBall = Instantiate(energyBallOrgn, platform);
+
+        if (Random.Range(0, 3) == 1)
+            newBall.SetBallType(BallType.Helth);
+        else
+            newBall.SetBallType(BallType.Energy);
+
         newBall.gameObject.SetActive(true);
         newBall.transform.localPosition = new Vector3(Random.Range(-3, +3), Random.Range(-1, +2), Random.Range(-3, +3) );
     }

@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
     Rigidbody rigitBody;
 
     Vector3 orignPos;
+
+    public int CurrentHelth => (int)helthSlider.value;
+
     public void Init()
     {
         SetLife(maxLife);
@@ -42,12 +45,29 @@ public class PlayerController : MonoBehaviour
         lifeFild.text = string.Format("{0}", currentLife);
     }
 
+    public void IncreaseEnergy(int count = 1)
+    {
+        SetEnergy(currentEnergy + count);
+    }
+
+    public void IncreaseHelth(int count = 1)
+    {
+        SetHelth(CurrentHelth + count);
+    }
+    
     void SetEnergy(int newEnergy)
     {
         if (newEnergy > maxEnergyPoints || newEnergy < 0 )
             return;
         currentEnergy = newEnergy;
         energyFild.text = string.Format("{0}", currentEnergy);
+    }
+
+    void SetHelth(int newHelth)
+    {
+        if (newHelth > maxHelthPoints || newHelth < 0)
+            return;
+        helthSlider.value = newHelth;
     }
     // Update is called once per frame
     void Update()
@@ -98,18 +118,23 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-        if(other.GetComponent<EnergyBall>())
+        var eneryBall = other.GetComponent<EnergyBall>();
+        if (eneryBall)
         {
-            SetEnergy(currentEnergy + 1);
+            eneryBall.OnPlayerCollision(this);
+            
             Destroy(other.gameObject);
             return;
         }
 
-        var v = helthSlider.value;
-        if (v > 0)
-            helthSlider.value = v - 1;
-        else
-            LooseLife();
+        if (other.GetComponent<BulletController>())
+        {
+            var v = helthSlider.value;
+            if (v > 0)
+                helthSlider.value = v - 1;
+            else
+                LooseLife();
+        }
     }
 
     void LooseLife()
