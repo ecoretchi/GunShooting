@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour
     }
     public PlayerController playerController;
     public EnergyBall energyBallOrgn;
+    public HealthBall healthBallOrgn;
 
     public Text gameOverTxt;
     public Button restartBtn;
@@ -29,6 +30,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         energyBallOrgn.gameObject.SetActive(false);
+        healthBallOrgn.gameObject.SetActive(false);
         StartGame();
     }
 
@@ -47,8 +49,22 @@ public class GameController : MonoBehaviour
 
     public void OnPlatformSpawn(Transform platform)
     {
-        var newBall = Instantiate(energyBallOrgn, platform);
+        var newBall = GenerateBall(platform);
         newBall.gameObject.SetActive(true);
-        newBall.transform.localPosition = new Vector3(Random.Range(-3, +3), Random.Range(-1, +2), Random.Range(-3, +3) );
+        newBall.transform.localPosition = 
+            new Vector3(
+                Random.Range(-3, +3), //x
+                Random.Range(+1, +2), //y
+                Random.Range(-3, +3)  //z
+                );
+    }
+
+    MonoBehaviour GenerateBall(Transform platform)
+    {
+        if(Random.Range(0,3)==0)
+        {
+            return Instantiate(healthBallOrgn, platform);
+        }
+        return Instantiate(energyBallOrgn, platform);
     }
 }

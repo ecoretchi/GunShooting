@@ -118,10 +118,10 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-        var eneryBall = other.GetComponent<EnergyBall>();
-        if (eneryBall)
+        var ball = other.GetComponent<MonoBehaviour>();
+        if (ball is IBall)
         {
-            IncreaseEnergy();   
+            (ball as IBall).OnPlayerCollision(this);   
             Destroy(other.gameObject);
             return;
         }
