@@ -121,8 +121,7 @@ public class PlayerController : MonoBehaviour
         var eneryBall = other.GetComponent<EnergyBall>();
         if (eneryBall)
         {
-            eneryBall.OnPlayerCollision(this);
-            
+            IncreaseEnergy();   
             Destroy(other.gameObject);
             return;
         }
