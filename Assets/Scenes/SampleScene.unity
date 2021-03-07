@@ -2963,7 +2963,7 @@ MonoBehaviour:
   reloadTimeSec: 1
   rateOfFire: 10
   rotSpeed: 5
-  reloadUI: {fileID: 0}
+  reloadUI: {fileID: 942123702}
 --- !u!65 &1551614792
 BoxCollider:
   m_ObjectHideFlags: 0

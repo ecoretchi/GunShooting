@@ -22,14 +22,14 @@ public class TankController : MonoBehaviour
 
     int ammoCount;
 
-    //Slider reloadSlider;
+    Slider reloadSlider;
 
     // Start is called before the first frame update
     void Start()
     {
         bullet.gameObject.SetActive(false);
-        //reloadSloder = reloadUI.GetComponentInChildren<Slider>();
-        //reloadSlider.maxValue = reloadTimeSec;
+        reloadSlider = reloadUI.GetComponentInChildren<Slider>();
+        reloadSlider.maxValue = reloadTimeSec;
     }
 
     // Update is called once per frame
@@ -66,20 +66,20 @@ public class TankController : MonoBehaviour
         GameObject.Destroy(newBullet.gameObject, 2);
         --ammoCount;
 
-        //if(ammoCount ==0)
-        //    reloadUI.gameObject.SetActive(true);
+        if (ammoCount == 0)
+            reloadUI.gameObject.SetActive(true);
     }
 
     void DoReload()
     {
         
         timerReload += Time.deltaTime;
-        //reloadSlider.value = timerReload;
+        reloadSlider.value = timerReload;
         if (timerReload > reloadTimeSec)
         {
             ammoCount = ammoCountMax;
             timerReload = 0;
-            //reloadUI.gameObject.SetActive(false);
+            reloadUI.gameObject.SetActive(false);
         }
     }
 }

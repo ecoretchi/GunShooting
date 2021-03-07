@@ -103,6 +103,16 @@ public class PlayerController : MonoBehaviour
         {
             LooseLife();
         }
+
+        CheckIsPushedOut();
+    }
+
+    void CheckIsPushedOut()
+    {
+        if(transform.position.z < -6 || transform.position.z > 25)
+        {
+            LooseLife();
+        }
     }
 
     void Spawn()
