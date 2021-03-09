@@ -11,14 +11,15 @@ public class PlatformConvController : MonoBehaviour
 
     readonly List<Transform> platforms = new List<Transform>();
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         for (int i = 0; i < transform.childCount; ++i)
         {
             var child = transform.GetChild(i);
             platforms.Add(child);
+            GameController.Instance.OnPlatfromInit(child);
         }
+        
     }
 
     // Update is called once per frame

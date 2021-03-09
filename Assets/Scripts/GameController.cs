@@ -19,13 +19,21 @@ public class GameController : MonoBehaviour
         }
     }
     public PlayerController playerController;
+    public DifficultGenerator difficultGenerator;
+
     public EnergyBall energyBallOrgn;
+
     public HealthBall healthBallOrgn;
 
     public Text gameOverTxt;
     public Button restartBtn;
     public bool IsGameOver { get; private set; }
 
+    public Transform LastPlatform { get; private set; }
+
+    private void Awake()
+    {
+    }
 
     private void Start()
     {
@@ -47,11 +55,25 @@ public class GameController : MonoBehaviour
         gameObject.SetActive(!value);
     }
 
+    public void OnPlatfromInit(Transform platform)
+    {
+        LastPlatform = platform;
+    }
+
     public void OnPlatformSpawn(Transform platform)
+    {
+        LastPlatform = platform;
+        difficultGenerator.OnPlatformSpawn(platform);
+       
+        GenerateNewBall(platform);
+        
+    }
+
+    void GenerateNewBall(Transform platform)
     {
         var newBall = GenerateBall(platform);
         newBall.gameObject.SetActive(true);
-        newBall.transform.localPosition = 
+        newBall.transform.localPosition =
             new Vector3(
                 Random.Range(-3, +3), //x
                 Random.Range(+1, +2), //y
