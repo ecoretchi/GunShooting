@@ -35,7 +35,7 @@ public class LevelController : MonoBehaviour
     void Update()
     {
         timerSec += Time.deltaTime;
-        timer.text = string.Format(enUS, "{0:00.0}", timerSec);
+        timer.text = string.Format(enUS, "{0:00.00}", timerSec);
 
         int sec = (int)timerSec;
 
@@ -50,7 +50,7 @@ public class LevelController : MonoBehaviour
 
     void ValidateText()
     {
-        level.text = string.Format(enUS, "{0}", currentLevel);
+        level.text = string.Format(enUS, "{0}", currentLevel / 5);
     }
 
 }

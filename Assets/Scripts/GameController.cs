@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -33,16 +34,21 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        energyBallOrgn.gameObject.SetActive(false);
+        healthBallOrgn.gameObject.SetActive(false);
     }
 
     private void Start()
     {
-        energyBallOrgn.gameObject.SetActive(false);
-        healthBallOrgn.gameObject.SetActive(false);
         StartGame();
     }
 
-    public void StartGame()
+    public void RestartGame()
+    {
+        SceneManager.LoadScene("Game");
+    }
+
+    void StartGame()
     {
         playerController.Init();
         OnGameOver(false);
@@ -63,15 +69,32 @@ public class GameController : MonoBehaviour
     public void OnPlatformSpawn(Transform platform)
     {
         LastPlatform = platform;
+
+        RemoveAllChildren(platform);
+
         difficultGenerator.OnPlatformSpawn(platform);
-       
-        GenerateNewBall(platform);
-        
+
+        GenerateNewBall(platform, GetRandomOrignBall());
+
     }
 
-    void GenerateNewBall(Transform platform)
+    void RemoveAllChildren(Transform parent)
     {
-        var newBall = GenerateBall(platform);
+        for (int i = 0; i < parent.childCount; ++i)
+        {
+            var child = parent.GetChild(i);
+            Destroy(child.gameObject);
+        }
+    }
+
+    public Transform GenerateNewBall(Transform orgnBall)
+    {
+        return GenerateNewBall(LastPlatform, orgnBall);
+    }
+
+    public Transform GenerateNewBall(Transform parent, Transform orgnBall)
+    {
+        var newBall= Instantiate(orgnBall, parent);
         newBall.gameObject.SetActive(true);
         newBall.transform.localPosition =
             new Vector3(
@@ -79,14 +102,15 @@ public class GameController : MonoBehaviour
                 Random.Range(+1, +2), //y
                 Random.Range(-3, +3)  //z
                 );
+        return newBall.transform;
     }
 
-    MonoBehaviour GenerateBall(Transform platform)
+    Transform GetRandomOrignBall()
     {
         if(Random.Range(0,3)==0)
         {
-            return Instantiate(healthBallOrgn, platform);
+            return healthBallOrgn.transform;
         }
-        return Instantiate(energyBallOrgn, platform);
+        return energyBallOrgn.transform;
     }
 }

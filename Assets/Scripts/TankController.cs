@@ -14,7 +14,6 @@ public class TankController : MonoBehaviour
     public float rateOfFire = 1;
     public float rotSpeed = 5;
 
-
     public Transform reloadUI;
 
     float timer;
@@ -63,6 +62,7 @@ public class TankController : MonoBehaviour
         var newBullet = Instantiate(bullet);
         newBullet.gameObject.SetActive(true);
         newBullet.transform.position = bullet.transform.position;
+        
         GameObject.Destroy(newBullet.gameObject, 2);
         --ammoCount;
 

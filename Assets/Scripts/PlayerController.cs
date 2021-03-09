@@ -7,11 +7,14 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 4;
     public int maxLife = 3;
+
     public int maxHelthPoints = 5;
     public int maxEnergyPoints = 5;
+    public int initLife = 5;
+    public int initEnergyPoints = 5;
 
-    public Text lifeFild;
-    public Text energyFild;
+    public ItemSNV lifeSNV;
+    public ItemSNV energySNV;
     public Slider helthSlider;
 
     int currentLife;
@@ -27,13 +30,16 @@ public class PlayerController : MonoBehaviour
 
     public void Init()
     {
-        SetLife(maxLife);
-        SetEnergy(maxEnergyPoints);
+
+        SetLife(initLife);
+        SetEnergy(initEnergyPoints);
         Spawn();
     }
 
     void Awake()
     {
+        energySNV.SetMaxValue(maxEnergyPoints);
+        lifeSNV.SetMaxValue(maxLife);
         helthSlider.maxValue = maxHelthPoints;
         rigitBody = GetComponent<Rigidbody>();
         orignPos = transform.position;
@@ -41,18 +47,39 @@ public class PlayerController : MonoBehaviour
 
     void SetLife(int newLife)
     {
+        if (newLife > maxLife || newLife < 0)
+            return;
         currentLife = newLife;
-        lifeFild.text = string.Format("{0}", currentLife);
+        lifeSNV.SetValue( currentLife);
+    }
+
+    public void IncreaseLife(int count = 1)
+    {
+        if (currentLife == maxLife)
+        {
+            if (CurrentHelth == maxHelthPoints)
+                SetEnergy(maxEnergyPoints);
+            else
+                SetHelth(maxHelthPoints);
+        }
+        else
+            SetLife(currentLife + count);
     }
 
     public void IncreaseEnergy(int count = 1)
     {
-        SetEnergy(currentEnergy + count);
+        if (currentEnergy == maxEnergyPoints)
+            SetHelth(CurrentHelth + count);
+        else
+            SetEnergy(currentEnergy + count);
     }
 
     public void IncreaseHelth(int count = 1)
     {
-        SetHelth(CurrentHelth + count);
+        if (CurrentHelth == maxHelthPoints)
+            SetEnergy(currentEnergy + count);
+        else
+            SetHelth(CurrentHelth + count);
     }
     
     void SetEnergy(int newEnergy)
@@ -60,7 +87,7 @@ public class PlayerController : MonoBehaviour
         if (newEnergy > maxEnergyPoints || newEnergy < 0 )
             return;
         currentEnergy = newEnergy;
-        energyFild.text = string.Format("{0}", currentEnergy);
+        energySNV.SetValue(currentEnergy);
     }
 
     void SetHelth(int newHelth)
@@ -69,6 +96,13 @@ public class PlayerController : MonoBehaviour
             return;
         helthSlider.value = newHelth;
     }
+
+    public void IncreaseMaxEnergy()
+    {
+        ++maxEnergyPoints;
+        energySNV.SetMaxValue(maxEnergyPoints);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -135,14 +169,21 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
             return;
         }
-
-        if (other.GetComponent<BulletController>())
+        var bullet = other.GetComponent<BulletController>();
+        if (bullet)
         {
-            var v = helthSlider.value;
-            if (v > 0)
-                helthSlider.value = v - 1;
-            else
-                LooseLife();
+            bullet.OnPlayerCollision(this);
+        }
+    }
+
+    public void LooseHelths(float count)
+    {
+        var currentHelth = helthSlider.value;
+        if (currentHelth > count)
+            helthSlider.value = Mathf.Clamp(currentHelth - count,  0, maxHelthPoints);
+        else
+        {
+            LooseLife();
         }
     }
 
